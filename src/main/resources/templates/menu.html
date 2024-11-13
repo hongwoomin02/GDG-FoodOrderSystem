@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>메뉴판</title>
+</head>
+<body>
+<h1>메뉴판</h1>
+<ul>
+    <li>피자</li>
+    <li>햄버거</li>
+    <li>치킨</li>
+</ul>
+
+<form action="/add" method="post">
+    <label for="name">음식명:</label>
+    <select name="name" id="name">
+        <option value="피자">피자</option>
+        <option value="햄버거">햄버거</option>
+        <option value="치킨">치킨</option>
+    </select><br>
+
+    <label for="count">수량:</label>
+    <input type="number" id="count" name="count" required><br>
+
+    <button type="submit">주문 추가</button>
+</form>
+</body>
+</html>
