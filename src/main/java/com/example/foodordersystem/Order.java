@@ -2,10 +2,8 @@ package com.example.foodordersystem;
 
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter
-@Setter
 @Entity
 @Table(name = "`order`")
 public class Order {
@@ -16,13 +14,16 @@ public class Order {
     private String name;
     private int count;
 
-
-
-    public Order(){}
+    protected  Order() {};
 
     public Order(String name, int count) {
         this.name = name;
         this.count = count;
 
     }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
 }
