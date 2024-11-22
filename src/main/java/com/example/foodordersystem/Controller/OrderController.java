@@ -1,16 +1,17 @@
 package com.example.foodordersystem.Controller;
 
-import com.example.foodordersystem.AddOrderDTO;
-import com.example.foodordersystem.EditOrderDTO;
-import com.example.foodordersystem.OrderDTO;
+import com.example.foodordersystem.DTO.Order.AddOrderRequestDTO;
+import com.example.foodordersystem.DTO.Order.EditOrderRequestDTO;
+import com.example.foodordersystem.DTO.Order.OrderResponseDTO;
 import com.example.foodordersystem.Service.OrderService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/orders")
+@RequestMapping("/orders")
 public class OrderController {
+
     private final OrderService orderService;
 
     public OrderController(OrderService orderService) {
@@ -18,17 +19,17 @@ public class OrderController {
     }
 
     @GetMapping
-    public List<OrderDTO> getAllOrders() {
+    public List<OrderResponseDTO> getAllOrders() {
         return orderService.getAllOrders();
     }
 
     @PostMapping
-    public void addOrder(@RequestBody AddOrderDTO addOrderDTO) {
+    public void addOrder(@RequestBody AddOrderRequestDTO addOrderDTO) {
         orderService.addOrder(addOrderDTO);
     }
 
-    @PatchMapping("/{id}")
-    public void editOrder(@PathVariable Long id, @RequestBody EditOrderDTO editOrderDTO) {
+    @PatchMapping
+    public void editOrder(@RequestBody EditOrderRequestDTO editOrderDTO) {
         orderService.editOrder(editOrderDTO);
     }
 
