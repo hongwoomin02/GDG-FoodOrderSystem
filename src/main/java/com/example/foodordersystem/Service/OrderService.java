@@ -2,10 +2,11 @@ package com.example.foodordersystem.Service;
 
 import com.example.foodordersystem.DTO.Order.AddOrderRequestDTO;
 import com.example.foodordersystem.DTO.Order.EditOrderRequestDTO;
-import com.example.foodordersystem.DTO.Order.FoodDTO;
+import com.example.foodordersystem.DTO.Order.FoodResponseDTO;
 import com.example.foodordersystem.DTO.Order.OrderResponseDTO;
 import com.example.foodordersystem.Entity.Food;
 import com.example.foodordersystem.Entity.Order;
+import com.example.foodordersystem.Entity.OrderItem;
 import com.example.foodordersystem.Entity.User;
 import com.example.foodordersystem.Repository.FoodRepository;
 import com.example.foodordersystem.Repository.OrderRepository;
@@ -34,14 +35,17 @@ public class OrderService {
         List<OrderResponseDTO> response = new ArrayList<>();
 
         for (Order order : orders) {
-            List<FoodDTO> foodDTOList = new ArrayList<>();
-            for (Food food : order.getFoods()) {
-                foodDTOList.add(new FoodDTO(food.getId(), food.getName(), food.getPrice()));
+            List<FoodResponseDTO> foodDTOList = new ArrayList<>();
+            for (OrderItem orderItem : order.getOrderItems()) {
+                Food food = orderItem.getFood();
+                int quantity = orderItem.getQuantity();
+                foodDTOList.add(new FoodResponseDTO(food.getId(), food.getName(), food.getPrice(), quantity));
             }
             response.add(new OrderResponseDTO(order.getId(), order.getUser().getName(), foodDTOList));
         }
         return response;
     }
+
 
     @Transactional
     public void addOrder(AddOrderRequestDTO orderDTO) {
@@ -49,9 +53,10 @@ public class OrderService {
 
         Order order = new Order(user);
 
-        for (Long foodId : orderDTO.foodIds()) {
-            Food food = foodRepository.findById(foodId).orElseThrow(() -> new IllegalArgumentException("음식을 찾을 수 없습니다."));
-            order.addFood(food);
+        for (AddOrderRequestDTO.FoodRequestDTO foodOrderDTO : orderDTO.foodOrders()) {
+            Food food = foodRepository.findById(foodOrderDTO.foodId()).orElseThrow(() -> new IllegalArgumentException("음식을 찾을 수 없습니다."));
+            OrderItem orderItem = new OrderItem(order, food, foodOrderDTO.quantity());
+            order.addOrderItem(orderItem);
         }
 
         orderRepository.save(order);
@@ -59,14 +64,16 @@ public class OrderService {
 
     @Transactional
     public void editOrder(EditOrderRequestDTO orderDTO) {
-        Order order = orderRepository.findById(orderDTO.id()).orElseThrow(() -> new IllegalArgumentException("주문을 찾을 수 없습니다."));
+        Order order = orderRepository.findById(orderDTO.userId()).orElseThrow(() -> new IllegalArgumentException("주문을 찾을 수 없습니다."));
 
-        order.clearFoods();
+        order.clearOrderItems();
 
-        for (Long foodId : orderDTO.foodIds()) {
-            Food food = foodRepository.findById(foodId).orElseThrow(() -> new IllegalArgumentException("음식을 찾을 수 없습니다."));
-            order.addFood(food);
+        for (EditOrderRequestDTO.FoodRequestDTO foodOrderDTO : orderDTO.foodOrders()) {
+            Food food = foodRepository.findById(foodOrderDTO.foodId()).orElseThrow(() -> new IllegalArgumentException("음식을 찾을 수 없습니다."));
+            OrderItem orderItem = new OrderItem(order, food, foodOrderDTO.quantity());
+            order.addOrderItem(orderItem);
         }
+
 
         orderRepository.save(order);
     }

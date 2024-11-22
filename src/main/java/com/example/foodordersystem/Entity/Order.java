@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 @Entity
-@Table(name = "`order`")
+@Table(name = "order")
 public class Order {
 
     @Id
@@ -17,13 +17,8 @@ public class Order {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToMany
-    @JoinTable(
-            name = "order_food",
-            joinColumns = @JoinColumn(name = "order_id"),
-            inverseJoinColumns = @JoinColumn(name = "food_id")
-    )
-    private List<Food> foods = new ArrayList<>();
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> orderItems = new ArrayList<>();
 
     protected Order() {}
 
@@ -31,11 +26,12 @@ public class Order {
         this.user = user;
     }
 
-    public void addFood(Food food) {
-        this.foods.add(food);
+    public void addOrderItem(OrderItem orderItem) {
+        this.orderItems.add(orderItem);
+        orderItem.setOrder(this);
     }
 
-    public void clearFoods() {
-        this.foods.clear();
+    public void clearOrderItems() {
+        this.orderItems.clear();
     }
 }
