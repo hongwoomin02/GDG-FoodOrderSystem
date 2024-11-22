@@ -1,8 +1,8 @@
 package com.example.foodordersystem.Controller;
 
-import com.example.foodordersystem.AddOrderDTO;
-import com.example.foodordersystem.EditOrderDTO;
-import com.example.foodordersystem.OrderDTO;
+import com.example.foodordersystem.DTO.Order.AddOrderRequestDTO;
+import com.example.foodordersystem.DTO.Order.EditOrderRequestDTO;
+import com.example.foodordersystem.DTO.Order.OrderResponseDTO;
 import com.example.foodordersystem.Service.OrderService;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,17 +18,17 @@ public class OrderController {
     }
 
     @GetMapping
-    public List<OrderDTO> getAllOrders() {
+    public List<OrderResponseDTO> getAllOrders() {
         return orderService.getAllOrders();
     }
 
     @PostMapping
-    public void addOrder(@RequestBody AddOrderDTO addOrderDTO) {
+    public void addOrder(@RequestBody AddOrderRequestDTO addOrderDTO) {
         orderService.addOrder(addOrderDTO);
     }
 
-    @PatchMapping("/{id}")
-    public void editOrder(@PathVariable Long id, @RequestBody EditOrderDTO editOrderDTO) {
+    @PatchMapping("/{id}") //PathVariable이랑 Requestbzody 둘중 하나만 써도 될텐데,,
+    public void editOrder(@PathVariable Long id, @RequestBody EditOrderRequestDTO editOrderDTO) {
         orderService.editOrder(editOrderDTO);
     }
 
