@@ -6,7 +6,7 @@ spring:
       username: h
       password: wori2251013@
 
-      url: jdbc:mysql://localhost:3306/foodorderdb
+      url: jdbc:mysql://localhost:3306/testdb
       driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:

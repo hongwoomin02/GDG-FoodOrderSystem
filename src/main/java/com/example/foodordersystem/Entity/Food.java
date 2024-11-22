@@ -18,8 +18,8 @@ public class Food {
 
     private int price;
 
-    @ManyToMany(mappedBy = "foods")
-    private List<Order> orders = new ArrayList<>();
+    @OneToMany(mappedBy = "food", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> orderItems = new ArrayList<>();
 
     protected Food() {}
 
