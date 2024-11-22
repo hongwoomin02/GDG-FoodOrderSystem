@@ -2,4 +2,5 @@ package com.example.foodordersystem.DTO.Order;
 
 import java.util.List;
 
-public record OrderResponseDTO(Long orderId, String userName, List<FoodDTO> foodDTO){}
+public record OrderResponseDTO(Long id, String userName, List<FoodDTO> foods) {}
+

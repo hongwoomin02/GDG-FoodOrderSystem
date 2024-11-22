@@ -14,12 +14,16 @@ public class Order {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "order_id")
-    private List<OrderItem> orderItems = new ArrayList<>();
+    @ManyToMany
+    @JoinTable(
+            name = "order_food",
+            joinColumns = @JoinColumn(name = "order_id"),
+            inverseJoinColumns = @JoinColumn(name = "food_id")
+    )
+    private List<Food> foods = new ArrayList<>();
 
     protected Order() {}
 
@@ -27,8 +31,11 @@ public class Order {
         this.user = user;
     }
 
-    public void addOrderItem(OrderItem orderItem) {
-        this.orderItems.add(orderItem);
-        orderItem.setOrder(this);
+    public void addFood(Food food) {
+        this.foods.add(food);
+    }
+
+    public void clearFoods() {
+        this.foods.clear();
     }
 }

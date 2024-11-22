@@ -9,6 +9,7 @@ import java.util.List;
 @Entity
 @Table(name = "food")
 public class Food {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,8 +18,8 @@ public class Food {
 
     private int price;
 
-    @OneToMany(mappedBy = "food", cascade = CascadeType.ALL)
-    private List<OrderItem> orderItems = new ArrayList<>();
+    @ManyToMany(mappedBy = "foods")
+    private List<Order> orders = new ArrayList<>();
 
     protected Food() {}
 
