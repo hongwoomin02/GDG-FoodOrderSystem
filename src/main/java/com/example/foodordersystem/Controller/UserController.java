@@ -32,6 +32,8 @@ public class UserController {
     public ResponseEntity<String> login(@RequestBody LoginRequestDTO loginRequestDTO) {
         userService.login(loginRequestDTO.email(), loginRequestDTO.password());
         httpSession.setAttribute("email", loginRequestDTO.email());
+        System.out.println("Session ID: " + httpSession.getId());
+        System.out.println("Email in session: " + httpSession.getAttribute("email"));
         return ResponseEntity.ok("로그인 성공");
     }
 
@@ -42,9 +44,13 @@ public class UserController {
     }
     @GetMapping("/test")
     public ResponseEntity<String> test() {
+        System.out.println("Session ID: " + httpSession.getId());
+        System.out.println("Email in session: " + httpSession.getAttribute("email"));
+
         if (httpSession.getAttribute("email") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
         }
-        return ResponseEntity.ok("인증된 사용자입니다");
+        return ResponseEntity.ok("인증된 사용자입니다: " + httpSession.getAttribute("email"));
     }
+
 }
