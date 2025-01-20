@@ -4,6 +4,7 @@ import com.example.foodordersystem.DTO.User.UserRequestDTO;
 import com.example.foodordersystem.DTO.User.UserResponseDTO;
 import com.example.foodordersystem.Entity.User;
 import com.example.foodordersystem.Repository.UserRepository;
+import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -13,10 +14,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final HttpSession httpSession;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, HttpSession httpSession) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.httpSession = httpSession;
     }
 
     @Transactional
@@ -39,6 +42,7 @@ public class UserService {
         if (!passwordEncoder.matches(password, user.getPassword())) {
             throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
         }
+
     }
 }
 
