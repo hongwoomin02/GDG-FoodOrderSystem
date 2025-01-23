@@ -20,7 +20,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/users/login", "/users/logout", "/users/signup")) // 특정 경로 제외
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/users/signup", "/users/login", "/users/logout","/users/test").permitAll()
+                        .requestMatchers("/users/signup", "/users/login", "/users/logout").permitAll()
                         .anyRequest().authenticated()
                 )
                 .logout(logout -> logout
@@ -28,7 +28,6 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/")
                         .permitAll()
                 )
-//                .formLogin((auth)-> auth.loginPage("users/login"))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
         return http.build();
     }
