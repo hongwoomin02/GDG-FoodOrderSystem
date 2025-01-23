@@ -43,14 +43,15 @@ public class UserController {
         return ResponseEntity.ok("로그아웃 성공");
     }
     @GetMapping("/test")
-    public ResponseEntity<String> test() {
-        System.out.println("Session ID: " + httpSession.getId());
-        System.out.println("Email in session: " + httpSession.getAttribute("email"));
+    public ResponseEntity<String> test(HttpSession session) {
+        System.out.println("Session ID: " + session.getId());
+        System.out.println("Email in session: " + session.getAttribute("email"));
 
-        if (httpSession.getAttribute("email") == null) {
+        if (session.getAttribute("email") == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
         }
-        return ResponseEntity.ok("인증된 사용자입니다: " + httpSession.getAttribute("email"));
+        return ResponseEntity.ok("인증된 사용자입니다: " + session.getAttribute("email"));
     }
+
 
 }
