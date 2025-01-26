@@ -6,6 +6,7 @@ import com.example.foodordersystem.Entity.User;
 import com.example.foodordersystem.Repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -30,92 +31,98 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional // 테스트 후 데이터가 롤백되도록 설정
+@Transactional
 public class UserControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private UserRepository userRepository; // 실제 DB를 확인하기 위해 사용
+    private UserRepository userRepository;
 
     @Autowired
-    private PasswordEncoder passwordEncoder; // PasswordEncoder 주입
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     @Test
+    @DisplayName("회원가입 테스트")
     void testSignup() throws Exception {
         // Given
         UserRequestDTO userRequestDTO = new UserRequestDTO("hong@naver.com", "1111", "h");
 
-        // When & Then
+        // When
         mockMvc.perform(post("/users/signup")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userRequestDTO)))
+                // Then
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value("test@email.com"))
-                .andExpect(jsonPath("$.name").value("John"))
+                .andExpect(jsonPath("$.email").value("hong@naver.com"))
+                .andExpect(jsonPath("$.name").value("h"))
                 .andDo(print());
 
-        // 실제 DB에 저장되었는지 확인
         User savedUser = userRepository.findByEmail("test@email.com").orElseThrow();
         assertThat(savedUser.getName()).isEqualTo("John");
     }
 
 
     @Test
+    @DisplayName("로그인 테스트")
     void testLogin() throws Exception {
         // Given
-        UserRequestDTO userRequestDTO = new UserRequestDTO("test@email.com", "password", "John");
-        userRepository.save(new User("test@email.com", passwordEncoder.encode("password"), "John")); // 비밀번호 암호화
+        UserRequestDTO userRequestDTO = new UserRequestDTO("hong@naver.com", "1111", "h");
+        userRepository.save(new User("hong@naver.com", passwordEncoder.encode("1111"), "h"));
 
-        LoginRequestDTO loginRequestDTO = new LoginRequestDTO("test@email.com", "password");
+        LoginRequestDTO loginRequestDTO = new LoginRequestDTO("hong@naver.com", "1111");
 
-        // When & Then
+        // When
         mockMvc.perform(post("/users/login")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequestDTO)))
+                // Then
                 .andExpect(status().isOk())
                 .andExpect(content().string("로그인 성공"))
                 .andDo(print());
     }
 
     @Test
-    void testLoginWithInvalidCredentials() throws Exception {
+    @DisplayName("잘못된 정보로 로그인시도")
+    void testLoginWrongInfo() throws Exception {
         // Given
-        LoginRequestDTO loginRequestDTO = new LoginRequestDTO("h@email.com", "wrongpassword");
+        LoginRequestDTO loginRequestDTO = new LoginRequestDTO("Wrong@email.com", "wrongpassword");
 
-        // When & Then
+        // When
         mockMvc.perform(post("/users/login")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequestDTO)))
+                // Then
                 .andExpect(status().isBadRequest())
                 .andDo(print());
     }
     @Test
+    @DisplayName("로그아웃 테스트")
     void testLogout() throws Exception {
         // Given
         MockHttpSession session = new MockHttpSession();
-        User user = new User("test@email.com", passwordEncoder.encode("password"), "hong");
+        User user = new User("hong@naver.com", passwordEncoder.encode("1111"), "hong");
         userRepository.save(user);
 
-        // 로그인 요청으로 세션 생성
         mockMvc.perform(post("/users/login")
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"email\": \"test@email.com\", \"password\": \"password\"}")
+                        .content("{\"email\": \"hong@naver.com\", \"password\": \"1111\"}")
                         .session(session))
                 .andExpect(status().isOk());
 
-        // When & Then: 로그아웃 요청
+        // When
         mockMvc.perform(post("/users/logout")
                         .with(csrf())
                         .session(session))
+                // Then
                 .andExpect(status().isOk())
                 .andExpect(content().string("로그아웃 성공"))
                 .andDo(print());
