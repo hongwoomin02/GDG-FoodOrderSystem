@@ -1,5 +1,6 @@
 package com.example.foodordersystem.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -31,13 +32,20 @@ public class SecurityConfig {
                 )
                 .logout(logout -> logout
                         .logoutUrl("/users/logout")
-                        .logoutSuccessUrl("/")
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(HttpServletResponse.SC_OK); // HTTP 200 상태 반환
+                            response.setContentType("text/plain;charset=UTF-8");
+                            response.getWriter().write("로그아웃 성공");
+                        })
+                        .invalidateHttpSession(true) // 세션 무효화
+                        .deleteCookies("JSESSIONID") // 쿠키 삭제
                         .permitAll()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
 
         return http.build();
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
