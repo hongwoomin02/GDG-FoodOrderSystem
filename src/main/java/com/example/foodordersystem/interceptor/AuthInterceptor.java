@@ -18,6 +18,13 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        String requestURI = request.getRequestURI();
+
+        // 인증이 필요 없는 경로는 요청 허용
+        if (requestURI.startsWith("/users/signup") || requestURI.startsWith("/users/login")) {
+            return true;
+        }
+
         String email = (String) httpSession.getAttribute("email");
 
         if (email == null) {
@@ -25,6 +32,6 @@ public class AuthInterceptor implements HandlerInterceptor {
             return false; // 인증되지 않은 경우 요청 차단
         }
         return true; // 인증된 경우 요청 허용
-
     }
+
 }
