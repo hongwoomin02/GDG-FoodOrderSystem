@@ -25,7 +25,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Order> orders = new ArrayList<>();
 
-    protected User(String mail, String password) {}
+    protected User() {}
 
     public User(String email, String password, String name) {
         this.email = email;

@@ -17,6 +17,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor)
-                .addPathPatterns("/orders/**");
+                .addPathPatterns("/orders/**") // 인증이 필요한 경로
+                .excludePathPatterns("/users/signup", "/users/login","/users/test"); // 인증이 필요 없는 경로
     }
+
 }

@@ -44,14 +44,19 @@ public class UserController {
     }
     @GetMapping("/test")
     public ResponseEntity<String> test(HttpSession session) {
-        System.out.println("Session ID: " + session.getId());
-        System.out.println("Email in session: " + session.getAttribute("email"));
+        String email = (String) session.getAttribute("email");
 
-        if (session.getAttribute("email") == null) {
+        // 세션에 email 값이 잘 저장되어 있는지 확인하는 로그 출력
+        System.out.println("Session ID: " + session.getId());
+        System.out.println("Email in session: " + email);  // 여기가 중요합니다!
+
+        if (email == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 필요");
         }
-        return ResponseEntity.ok("인증된 사용자입니다: " + session.getAttribute("email"));
+
+        return ResponseEntity.ok("인증된 사용자입니다: " + email);
     }
+
 
 
 }
