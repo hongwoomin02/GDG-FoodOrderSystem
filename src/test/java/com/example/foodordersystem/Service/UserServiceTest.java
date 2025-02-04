@@ -46,11 +46,14 @@ class UserServiceTest {
 
         Mockito.when(userRepository.existsByEmail(request.email())).thenReturn(false);
         Mockito.when(passwordEncoder.encode(request.password())).thenReturn(encodedPassword);
-        User savedUser = new User(request.email(), encodedPassword, request.name());
+
+        User givenUser = new User(request.email(), encodedPassword, request.name());
+
         Field idField = User.class.getDeclaredField("id");
         idField.setAccessible(true); // private 필드에 접근할 수 있도록 설정
-        idField.set(savedUser, 1L);  // id 값을 1L로 설정
-        Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(savedUser);
+        idField.set(givenUser, 1L);  // id 값을 1L로 설정
+
+        Mockito.when(userRepository.save(Mockito.any(User.class))).thenReturn(givenUser);
 
         // When
         UserResponseDTO response = userService.signup(request);
