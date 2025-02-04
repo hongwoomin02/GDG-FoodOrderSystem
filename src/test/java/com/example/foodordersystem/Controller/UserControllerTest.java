@@ -4,6 +4,7 @@ import com.example.foodordersystem.DTO.User.LoginRequestDTO;
 import com.example.foodordersystem.DTO.User.UserRequestDTO;
 import com.example.foodordersystem.DTO.User.UserResponseDTO;
 import com.example.foodordersystem.Service.UserService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,19 +40,24 @@ public class UserControllerTest {
     @MockBean
     private UserService userService;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Test
     @WithMockUser
     @DisplayName("회원가입 테스트")
     void testSignup() throws Exception {
         //Given
+        UserRequestDTO request = new UserRequestDTO("hong@naver.com", "1234", "hong");
         UserResponseDTO mockResponse = new UserResponseDTO(1L, "hong@naver.com", "hong");
+
         when(userService.signup(any(UserRequestDTO.class))).thenReturn(mockResponse);
 
         //When
         mockMvc.perform(post("/users/signup")
                         .with(csrf())
                         .contentType("application/json")
-                        .content("{\"email\": \"hong@naver.com\", \"password\": \"1234\", \"name\": \"hong\"}"))
+                        .content(objectMapper.writeValueAsString(request)))
                 //Then
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("hong@naver.com"))
