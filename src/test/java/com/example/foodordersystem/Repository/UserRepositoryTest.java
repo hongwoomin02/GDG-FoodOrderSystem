@@ -33,9 +33,12 @@ public class UserRepositoryTest {
         User user = new User("h@.com", "h", "h");
         // when
         User savedUser = userRepository.save(user);
-        // then
-        assertNotNull(savedUser.getId());
+        // then   저장되어있는 값들이 같은지 확인을 해본다
+        assertThat(savedUser).isNotNull();
         assertThat(savedUser.getId()).isNotNull();
+        assertThat(savedUser.getEmail()).isEqualTo("h@.com");
+        assertThat(savedUser.getName()).isEqualTo("h");
+        assertThat(savedUser.getPassword()).isEqualTo("h");
     }
     @Test
     @DisplayName("Id로 회원 검색")
