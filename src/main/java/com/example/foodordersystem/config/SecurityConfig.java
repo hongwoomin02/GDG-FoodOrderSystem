@@ -26,7 +26,7 @@ public class SecurityConfig {
 //                )
                 .csrf(csrf->csrf.disable()) //포스트맨으로 요청 테스트시 활성화
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/users/signup", "/users/login").permitAll() // 로그인과 회원가입은 인증 없이 접근 허용
+                        .requestMatchers("/users/signup", "/users/login","/orders/**").permitAll() // 로그인과 회원가입은 인증 없이 접근 허용
                         .requestMatchers("/test").authenticated()
                         .requestMatchers("/users/logout").authenticated()  // 로그아웃은 인증된 사용자만 접근
                         .anyRequest().authenticated()  // 나머지 요청은 인증 필요
