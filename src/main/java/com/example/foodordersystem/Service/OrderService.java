@@ -31,7 +31,7 @@ public class OrderService {
     }
 
     public List<OrderResponseDTO> getAllOrders() {
-        List<Order> orders = orderRepository.findAll();
+        List<Order> orders = orderRepository.findAllOrders();
         List<OrderResponseDTO> response = new ArrayList<>();
 
         for (Order order : orders) {
