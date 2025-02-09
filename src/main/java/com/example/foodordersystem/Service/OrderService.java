@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
@@ -53,12 +55,23 @@ public class OrderService {
 
         Order order = new Order(user);
 
+        List<Long> foodIds = orderDTO.foodOrders().stream()
+                .map(AddOrderRequestDTO.FoodRequestDTO::foodId)
+                .collect(Collectors.toList());
+
+        List<Food> foods = orderRepository.findFoodById(foodIds);
+
+        Map<Long, Food> foodMap = foods.stream()
+                .collect(Collectors.toMap(Food::getId, food -> food));
+
         for (AddOrderRequestDTO.FoodRequestDTO foodOrderDTO : orderDTO.foodOrders()) {
-            Food food = foodRepository.findById(foodOrderDTO.foodId()).orElseThrow(() -> new IllegalArgumentException("음식을 찾을 수 없습니다."));
+            Food food = foodMap.get(foodOrderDTO.foodId());
+            if (food == null) {
+                throw new IllegalArgumentException("음식을 찾을 수 없습니다.");
+            }
             OrderItem orderItem = new OrderItem(order, food, foodOrderDTO.quantity());
             order.addOrderItem(orderItem);
         }
-
         orderRepository.save(order);
     }
 
@@ -83,6 +96,6 @@ public class OrderService {
         if (!orderRepository.existsById(id)) {
             throw new IllegalArgumentException("주문을 찾을 수 없습니다.");
         }
-        orderRepository.deleteById(id);
+        orderRepository.deleteOrderById(id);
     }
 }
