@@ -81,8 +81,18 @@ public class OrderService {
 
         order.clearOrderItems();
 
+        List<Long> foodIds = orderDTO.foodOrders().stream()
+                .map(EditOrderRequestDTO.FoodRequestDTO::foodId)
+                .collect(Collectors.toList());
+        List<Food> foods = orderRepository.findFoodById(foodIds);
+        Map<Long, Food> foodMap = foods.stream()
+                .collect(Collectors.toMap(Food::getId, food -> food));
+
         for (EditOrderRequestDTO.FoodRequestDTO foodOrderDTO : orderDTO.foodOrders()) {
-            Food food = foodRepository.findById(foodOrderDTO.foodId()).orElseThrow(() -> new IllegalArgumentException("음식을 찾을 수 없습니다."));
+            Food food = foodMap.get(foodOrderDTO.foodId());
+            if (food == null) {
+                throw new IllegalArgumentException("음식을 찾을 수 없습니다.");
+            }
             OrderItem orderItem = new OrderItem(order, food, foodOrderDTO.quantity());
             order.addOrderItem(orderItem);
         }
