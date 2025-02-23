@@ -3,6 +3,8 @@ package com.example.foodordersystem.Service;
 import com.example.foodordersystem.DTO.User.UserRequestDTO;
 import com.example.foodordersystem.DTO.User.UserResponseDTO;
 import com.example.foodordersystem.Entity.User;
+import com.example.foodordersystem.Exception.RestApiException;
+import com.example.foodordersystem.Exception.UserError;
 import com.example.foodordersystem.Repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
@@ -25,7 +27,7 @@ public class UserService {
     @Transactional
     public UserResponseDTO signup(UserRequestDTO request) {
         if (userRepository.existsByEmail(request.email())) {
-            throw new IllegalArgumentException("이미 존재하는 이메일입니다.");
+            throw new RestApiException(UserError.EMAIL_EXISTS);
         }
 
         String encodedPassword = passwordEncoder.encode(request.password());
@@ -37,10 +39,10 @@ public class UserService {
 
     public void login(String email, String password) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 이메일입니다."));
+                .orElseThrow(() -> new RestApiException(UserError.EMAIL_NOT_FOUND));
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new RestApiException(UserError.WRONG_PASSWORD);
         }
         httpSession.setAttribute("email", email);
     }

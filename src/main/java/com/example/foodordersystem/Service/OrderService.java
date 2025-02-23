@@ -8,6 +8,8 @@ import com.example.foodordersystem.Entity.Food;
 import com.example.foodordersystem.Entity.Order;
 import com.example.foodordersystem.Entity.OrderItem;
 import com.example.foodordersystem.Entity.User;
+import com.example.foodordersystem.Exception.OrderError;
+import com.example.foodordersystem.Exception.RestApiException;
 import com.example.foodordersystem.Repository.FoodRepository;
 import com.example.foodordersystem.Repository.OrderRepository;
 import com.example.foodordersystem.Repository.UserRepository;
@@ -67,7 +69,7 @@ public class OrderService {
         for (AddOrderRequestDTO.FoodRequestDTO foodOrderDTO : orderDTO.foodOrders()) {
             Food food = foodMap.get(foodOrderDTO.foodId());
             if (food == null) {
-                throw new IllegalArgumentException("음식을 찾을 수 없습니다.");
+                throw new RestApiException(OrderError.FOOD_NOT_FOUND);
             }
             OrderItem orderItem = new OrderItem(order, food, foodOrderDTO.quantity());
             order.addOrderItem(orderItem);
@@ -91,7 +93,7 @@ public class OrderService {
         for (EditOrderRequestDTO.FoodRequestDTO foodOrderDTO : orderDTO.foodOrders()) {
             Food food = foodMap.get(foodOrderDTO.foodId());
             if (food == null) {
-                throw new IllegalArgumentException("음식을 찾을 수 없습니다.");
+                throw new RestApiException(OrderError.FOOD_NOT_FOUND);
             }
             OrderItem orderItem = new OrderItem(order, food, foodOrderDTO.quantity());
             order.addOrderItem(orderItem);
@@ -104,7 +106,7 @@ public class OrderService {
     @Transactional
     public void deleteOrder(Long id) {
         if (!orderRepository.existsById(id)) {
-            throw new IllegalArgumentException("주문을 찾을 수 없습니다.");
+            throw new RestApiException(OrderError.ORDER_NOT_FOUND);
         }
         orderRepository.deleteOrderById(id);
     }
